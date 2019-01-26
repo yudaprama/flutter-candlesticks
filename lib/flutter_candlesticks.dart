@@ -122,14 +122,14 @@ class _OHLCVPainter extends CustomPainter {
     _max = -double.infinity;
     _maxVolume = -double.infinity;
     for (var i in data) {
-      if (i["high"] > _max) {
-        _max = i["high"].toDouble();
+      if (i[2] > _max) {
+        _max = i[2].toDouble();
       }
-      if (i["low"] < _min) {
-        _min = i["low"].toDouble();
+      if (i[3] < _min) {
+        _min = i[3].toDouble();
       }
-      if (i["volumeto"] > _maxVolume) {
-        _maxVolume = i["volumeto"].toDouble();
+      if (i[5] > _maxVolume) {
+        _maxVolume = i[5].toDouble();
       }
     }
 
@@ -226,13 +226,13 @@ class _OHLCVPainter extends CustomPainter {
       rectRight = ((i + 1) * rectWidth) - lineWidth / 2;
 
       double volumeBarTop = (height + volumeHeight) -
-          (data[i]["volumeto"] * volumeNormalizer - lineWidth / 2);
+          (data[i][5] * volumeNormalizer - lineWidth / 2);
       double volumeBarBottom = height + volumeHeight + lineWidth / 2;
 
-      if (data[i]["open"] > data[i]["close"]) {
+      if (data[i][1] > data[i][4]) {
         // Draw candlestick if decrease
-        rectTop = height - (data[i]["open"] - _min) * heightNormalizer;
-        rectBottom = height - (data[i]["close"] - _min) * heightNormalizer;
+        rectTop = height - (data[i][1] - _min) * heightNormalizer;
+        rectBottom = height - (data[i][4] - _min) * heightNormalizer;
         rectPaint = new Paint()
           ..color = decreaseColor
           ..strokeWidth = lineWidth;
@@ -247,9 +247,9 @@ class _OHLCVPainter extends CustomPainter {
         canvas.drawRect(volumeRect, rectPaint);
       } else {
         // Draw candlestick if increase
-        rectTop = (height - (data[i]["close"] - _min) * heightNormalizer) +
+        rectTop = (height - (data[i][4] - _min) * heightNormalizer) +
             lineWidth / 2;
-        rectBottom = (height - (data[i]["open"] - _min) * heightNormalizer) -
+        rectBottom = (height - (data[i][1] - _min) * heightNormalizer) -
             lineWidth / 2;
         rectPaint = new Paint()
           ..color = increaseColor
@@ -276,8 +276,8 @@ class _OHLCVPainter extends CustomPainter {
       }
 
       // Draw low/high candlestick wicks
-      double low = height - (data[i]["low"] - _min) * heightNormalizer;
-      double high = height - (data[i]["high"] - _min) * heightNormalizer;
+      double low = height - (data[i][3] - _min) * heightNormalizer;
+      double high = height - (data[i][2] - _min) * heightNormalizer;
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
