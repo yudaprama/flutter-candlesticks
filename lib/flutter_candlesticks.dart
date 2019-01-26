@@ -21,7 +21,7 @@ class OHLCVGraph extends StatelessWidget {
         super(key: key);
 
   /// OHLCV data to graph  /// List of Maps containing open, high, low, close and volumeto
-  /// Example: [[0 : 40.0, 1 : 75.0, 2 : 25.0, 3 : 50.0, 4 : 5000.0}, {...}]
+  /// Example: [["open" : 40.0, "high" : 75.0, "low" : 25.0, "close" : 50.0, "volumeto" : 5000.0}, {...}]
   final List data;
 
   /// All lines in chart are drawn with this width
@@ -122,14 +122,14 @@ class _OHLCVPainter extends CustomPainter {
     _max = -double.infinity;
     _maxVolume = -double.infinity;
     for (var i in data) {
-      if (i[1] > _max) {
-        _max = i[1].toDouble();
+      if (i["high"] > _max) {
+        _max = i["high"].toDouble();
       }
-      if (i[2] < _min) {
-        _min = i[2].toDouble();
+      if (i["low"] < _min) {
+        _min = i["low"].toDouble();
       }
-      if (i[4] > _maxVolume) {
-        _maxVolume = i[4].toDouble();
+      if (i["volumeto"] > _maxVolume) {
+        _maxVolume = i["volumeto"].toDouble();
       }
     }
 
@@ -226,13 +226,13 @@ class _OHLCVPainter extends CustomPainter {
       rectRight = ((i + 1) * rectWidth) - lineWidth / 2;
 
       double volumeBarTop = (height + volumeHeight) -
-          (data[i][4] * volumeNormalizer - lineWidth / 2);
+          (data[i]["volumeto"] * volumeNormalizer - lineWidth / 2);
       double volumeBarBottom = height + volumeHeight + lineWidth / 2;
 
-      if (data[i][0] > data[i][3]) {
+      if (data[i]["open"] > data[i]["close"]) {
         // Draw candlestick if decrease
-        rectTop = height - (data[i][0] - _min) * heightNormalizer;
-        rectBottom = height - (data[i][3] - _min) * heightNormalizer;
+        rectTop = height - (data[i]["open"] - _min) * heightNormalizer;
+        rectBottom = height - (data[i]["close"] - _min) * heightNormalizer;
         rectPaint = new Paint()
           ..color = decreaseColor
           ..strokeWidth = lineWidth;
@@ -247,9 +247,9 @@ class _OHLCVPainter extends CustomPainter {
         canvas.drawRect(volumeRect, rectPaint);
       } else {
         // Draw candlestick if increase
-        rectTop = (height - (data[i][3] - _min) * heightNormalizer) +
+        rectTop = (height - (data[i]["close"] - _min) * heightNormalizer) +
             lineWidth / 2;
-        rectBottom = (height - (data[i][0] - _min) * heightNormalizer) -
+        rectBottom = (height - (data[i]["open"] - _min) * heightNormalizer) -
             lineWidth / 2;
         rectPaint = new Paint()
           ..color = increaseColor
@@ -276,8 +276,8 @@ class _OHLCVPainter extends CustomPainter {
       }
 
       // Draw low/high candlestick wicks
-      double low = height - (data[i][2] - _min) * heightNormalizer;
-      double high = height - (data[i][1] - _min) * heightNormalizer;
+      double low = height - (data[i]["low"] - _min) * heightNormalizer;
+      double high = height - (data[i]["high"] - _min) * heightNormalizer;
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
